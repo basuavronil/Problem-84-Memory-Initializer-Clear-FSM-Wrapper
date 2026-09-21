@@ -50,4 +50,11 @@ Below is the pinout and connection structure for the **Memory Initializer / Clea
 ```
 ## Outputs 
 ### Waveforms 
+<img width="959" height="328" alt="image" src="https://github.com/user-attachments/assets/3eef9ade-c60c-4a26-b63d-051e8d14c9fe" />
+
 ### Simulation Terminal
+<img width="820" height="416" alt="image" src="https://github.com/user-attachments/assets/e6af9da4-0261-4579-b843-3b3dabe8e82f" />
+
+<img width="815" height="330" alt="image" src="https://github.com/user-attachments/assets/b9bde643-8925-4b15-9da9-75cd28a270cd" />
+
+
