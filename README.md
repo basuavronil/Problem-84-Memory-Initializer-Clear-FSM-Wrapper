@@ -6,7 +6,42 @@ When a hardware system powers on or resets, the memory cells in an SRAM contain 
 
 The Memory Initializer wrapper prevents this by seizing control of the SRAM during reset, systematically overwriting every single memory address with zero (0x00), and only handing control back to your main system once the memory is clean.
 
-## Input and Output Port 
+## Initialization Strategy & Trade-offs
+
+A common architectural question regarding memory wrappers is whether memory should be cleared **upfront during boot** or **on-demand per address access**. This design implements an **upfront 256-cycle sweep**.
+
+---
+
+### Why Upfront Sweep Over On-Demand Clearing?
+
+#### 1. On-Demand Clearing (Not Used)
+An on-demand scheme clears a memory address only when a user issued a read/write to that specific address. 
+* **Complexity:** Requires a 256-bit tracking register array (one valid/dirty bit per address) to record which locations have been cleared.
+* **Latency Overhead:** Every user memory request must pass through tracking lookup logic. Uninitialized reads incur variable-delay wait states.
+* **Area Penalty:** Storing state flags for every memory row significantly increases flip-flop count and logic utilization.
+
+#### 2. Upfront Boot-Time Sweep (Implemented)
+The wrapper locks user access immediately upon reset release and iterates through every address (`0x00` to `0xFF`) sequentially before asserting `init_done`.
+* **Minimal Hardware:** Requires only a single 8-bit counter and a 1-bit FSM state register.
+* **Zero Latency Penalty:** Once initialized, user access experiences **0 clock cycles of latency penalty**—read and write signals connect directly through multiplexers.
+* **Instantaneous Boot Time:** On a standard system running at 100 MHz, a 256-cycle sweep completes in **2.56 microseconds** ($\mu\text{s}$), finishing long before the main processor completes its own power-on reset (POR) sequence.
+
+---
+
+### Startup Execution Flow
+
+```text
+[ Power-On / System Reset (rst_n = 0) ]
+                   │
+                   ▼
+[ Sequential Sweep: 256 Clock Cycles ] ──► Overwrites 0x0000 to addresses 0x00..0xFF
+                   │                       User access blocked (init_done = 0)
+                   ▼
+[ Handover Control (init_done = 1) ]  ──► All memory addresses guaranteed clean
+                   │                       User granted full-speed access
+                   ▼
+[ Normal Operation Phase ]
+```
 ## Pinout / Interface Ports
 
 ### Clock & Reset
