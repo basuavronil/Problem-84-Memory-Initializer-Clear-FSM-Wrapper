@@ -52,6 +52,34 @@ The module utilizes a 1-bit State Register (`state`) to transition between initi
                   +-----------------------------------+
 ```
 ## clear_address
+The memory clear operation runs **sequentially, address by address, automatically upon reset**. It does **not** happen all at once in a single clock cycle, nor is it triggered on-demand when a user requests an address.
+
+### Step-by-Step Operation
+
+#### 1. Sequential Sweeping (1 Address per Clock Cycle)
+Physical SRAM hardware possesses a single set of address and write-control lines, making it physically impossible to write to all 256 addresses simultaneously in one clock cycle. 
+
+The wrapper operates as an automated hardware counter loop:
+
+* **Clock Cycle 1:** FSM targets Address `0x00` and writes `0x0000`.
+* **Clock Cycle 2:** Counter increments to Address `0x01` and writes `0x0000`.
+* **Clock Cycle 3:** Counter increments to Address `0x02` and writes `0x0000`.
+* **...**
+* **Clock Cycle 256:** Counter reaches final Address `0xFF` and writes `0x0000`.
+
+> **Note:** For a 256-word memory array, initialization takes exactly **256 consecutive clock cycles** to complete the full sweep.
+
+#### 2. Automatic Power-On / Reset Trigger
+The clearing process initiates automatically as soon as the active-low reset signal (`rst_n`) is released (`0` → `1`). No external intervention or user address request is required to start the process.
+
+#### 3. Blind Zero-Write
+The wrapper does not execute a "read-before-write" check. Instead, it systematically and forcibly overwrites every location with `0x0000`, eliminating power-on garbage data.
+
+#### 4. Hardware Access Interlock
+During the 256-cycle sweep:
+* `init_done` remains driven LOW (`0`).
+* The internal multiplexers **isolate and block** all incoming user signals (`user_addr`, `user_din`, `user_we`).
+* Any external attempt by the user system to read or write memory during this phase is safely ignored.
 
 # Interface & Interconnect Diagram
 
