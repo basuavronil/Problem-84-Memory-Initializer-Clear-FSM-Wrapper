@@ -8,8 +8,7 @@
 
 module sram_init_wrapper (
     // Clock and Reset Signals
-    input  wire        clk,        // System Clock
-    input  wire        rst_n,      // Active-Low Asynchronous Reset
+    input clk, rst_n,      // Active-Low Asynchronous Reset
 
     // User / System Side Interface (8-bit address = 256 locations, 16-bit data)
     input  wire [7:0]  user_addr,  // User target address
