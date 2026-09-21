@@ -62,7 +62,7 @@ The wrapper locks user access immediately upon reset release and iterates throug
 - `sram_dout` *(Input, `DATA_WIDTH` bits)*: Direct data output line from physical SRAM.
 
 # Internal Regs 
-## State 
+1. States 2. clear_addr [7:0] 
 ## Finite State Machine (FSM) States
 
 The module utilizes a 1-bit State Register (`state`) to transition between initialization and normal user operation:
