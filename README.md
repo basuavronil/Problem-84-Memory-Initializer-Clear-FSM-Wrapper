@@ -25,6 +25,34 @@ The Memory Initializer wrapper prevents this by seizing control of the SRAM duri
 - `sram_din` *(Output, `DATA_WIDTH` bits)*: Multiplexed write data line connected directly to physical SRAM.
 - `sram_we` *(Output, 1-bit)*: Multiplexed write enable control connected directly to physical SRAM.
 - `sram_dout` *(Input, `DATA_WIDTH` bits)*: Direct data output line from physical SRAM.
+
+# Internal Regs 
+## State 
+## Finite State Machine (FSM) States
+
+The module utilizes a 1-bit State Register (`state`) to transition between initialization and normal user operation:
+
+```text
+                  +-----------------------------------+
+                  |          STATE 0 (CLEAR)          |
+                  | - Blocks user access              |
+                  | - Sweeps addresses 0x00 to 0xFF   |
+                  | - Writes 0x0000 to every location |
+                  | - Holds init_done = 0             |
+                  +-----------------+-----------------+
+                                    |
+                                    | (clear_addr == 0xFF)
+                                    v
+                  +-----------------------------------+
+                  |          STATE 1 (DONE)           |
+                  | - Handover control to user system |
+                  | - Routes user_addr & user_din     |
+                  | - Asserts init_done = 1           |
+                  | - Holds state until next rst_n    |
+                  +-----------------------------------+
+```
+## clear_address
+
 # Interface & Interconnect Diagram
 
 Below is the pinout and connection structure for the **Memory Initializer / Clear FSM Wrapper**, showing how the user logic, the wrapper module, and the target physical SRAM interface with one another.
