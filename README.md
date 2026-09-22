@@ -92,7 +92,8 @@ The module utilizes a 1-bit State Register (`state`) to transition between initi
 
 A traditional plain-text schematic that works inside any standard Markdown code block without needing renderer extensions.
 
-<img width="833" height="389" alt="image" src="https://github.com/user-attachments/assets/034a85af-ed9e-4867-a878-d83b97ecbd14" />
+<img width="1600" height="702" alt="image" src="https://github.com/user-attachments/assets/312b6151-dde9-4607-b1ee-0f03babc08fc" />
+
 
 ## clear_address
 The memory clear operation runs **sequentially, address by address, automatically upon reset**. It does **not** happen all at once in a single clock cycle, nor is it triggered on-demand when a user requests an address.
