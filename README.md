@@ -86,6 +86,24 @@ The module utilizes a 1-bit State Register (`state`) to transition between initi
                   | - Holds state until next rst_n    |
                   +-----------------------------------+
 ```
+---
+
+### Option 2: ASCII Text Block Diagram
+
+A traditional plain-text schematic that works inside any standard Markdown code block without needing renderer extensions.
+
+```text
+                     +-----------------------+
+                     |                       |
+   clk  ------------>|                       |------------> user_dout[15:0]
+   rst_n ----------->|                       |------------> init_done
+user_addr[7:0] ----->|   sram_init_wrapper   |------------> sram_addr[7:0]
+user_din[15:0] ----->|                       |------------> sram_din[15:0]
+ user_we ------------>|                       |------------> sram_we
+sram_dout[15:0] ---->|                       |
+                     |                       |
+                     +-----------------------+
+```
 ## clear_address
 The memory clear operation runs **sequentially, address by address, automatically upon reset**. It does **not** happen all at once in a single clock cycle, nor is it triggered on-demand when a user requests an address.
 
