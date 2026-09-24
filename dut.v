@@ -28,22 +28,22 @@ module sram_init_wrapper (
     // Registers and State Variables (0 = CLEAR, 1 = DONE)
     // ------------------------------------------------------------------------
     reg       state;
-    reg [7:0] clear_addr;
+    reg [7:0] init_addr_cnt;
 
     // ------------------------------------------------------------------------
     // Sequential Logic: FSM State Transition and Address Counter
     // ------------------------------------------------------------------------
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            state      <= 1'b0;     // Enter CLEAR state on reset
-            clear_addr <= 8'h00;    // Start counter at address 0
+            state         <= 1'b0;     // Enter CLEAR state on reset
+            init_addr_cnt <= 8'h00;    // Start counter at address 0
         end else begin
             case (state)
                 1'b0: begin // CLEAR state
-                    if (clear_addr == 8'hFF) begin // Max address (255)
-                        state <= 1'b1;              // Move to DONE state
+                    if (init_addr_cnt == 8'hFF) begin // Max address (255)
+                        state <= 1'b1;                // Move to DONE state
                     end else begin
-                        clear_addr <= clear_addr + 1'b1;
+                        init_addr_cnt <= init_addr_cnt + 1'b1;
                     end
                 end
 
@@ -62,7 +62,7 @@ module sram_init_wrapper (
     assign init_done = (state == 1'b1);
 
     // MUX Logic: Route counter during reset, route user during normal operation
-    assign sram_addr = (init_done) ? user_addr : clear_addr;
+    assign sram_addr = (init_done) ? user_addr : init_addr_cnt;
     assign sram_din  = (init_done) ? user_din  : 16'h0000;
     assign sram_we   = (init_done) ? user_we   : 1'b1;
 
